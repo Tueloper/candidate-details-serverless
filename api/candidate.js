@@ -80,7 +80,7 @@ const list = (event, context, callback) => {
       return callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          candidates: data.Items
+          candidates: data.Items || `There are no candidates available`
         })
       });
     }
@@ -103,7 +103,7 @@ const get = (event, context, callback) => {
     .then(result => {
       const response = {
         statusCode: 200,
-        body: JSON.stringify(result.Item),
+        body: JSON.stringify(result.Item) || `There are no candidates available`,
       };
       callback(null, response);
     })
@@ -114,8 +114,21 @@ const get = (event, context, callback) => {
     });
 };
 
+
+const welcome = (event, context, callback) => {
+
+  const response = {
+    statusCode: 200,
+    body: "Welcomen to Candidates Portal",
+  };
+    
+  return response;
+}
+
+
 module.exports = {
   list,
   get,
-  submit
+  submit,
+  welcome
 }

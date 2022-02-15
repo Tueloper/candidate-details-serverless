@@ -58,6 +58,13 @@ resources:
 
 
 functions:
+  candidateWelcome:
+    handler: api/candidate.welcome
+    events:
+      - http:
+          path: candidates/welcome
+          method: get
+          
   candidateSubmission:
     handler: api/candidate.submit
     memorySize: 128
