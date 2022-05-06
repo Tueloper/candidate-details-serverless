@@ -1,10 +1,15 @@
 {
-  "name": "candidate-details-service",
+  "name": "serverlesss-terraform",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sls-deploy": "serverless deploy",
+    "terraform:init": "terraform init",
+    "terraform:plan": "export AWS_REGION=us-east-1 && terraform plan -var 'AWS_ACCOUNT_ID=aws_account_id' -var 'region=us-east-1' -var 'stage=dev' -var 'aws_profile=default' -var 'domain=${domain}' -var 'certificateArn=domainCertificateARN' -var-file='dev.tfvars'",
+    "terraform:apply": "export AWS_REGION=us-east-1 && terraform apply -var 'AWS_ACCOUNT_ID=aws_account_id' -var 'region=us-east-1' -var 'stage=dev' -var 'aws_profile=default' -var 'domain=${domain}' -var 'certificateArn=domainCertificateARN' -var-file='dev.tfvars' -auto-approve",
+    "terraform:destroy": "export AWS_REGION=us-east-1 && terraform destroy -var 'AWS_ACCOUNT_ID=aws_account_id' -var 'region=us-east-1' -var 'stage=dev' -var 'aws_profile=default' -var 'domain=${domain}' -var 'certificateArn=domainCertificateARN' -var-file='dev.tfvars' -auto-approve"
   },
   "keywords": [],
   "author": "",
