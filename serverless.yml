@@ -1,6 +1,6 @@
 # serverless.yml
-
-service: candidate-details-service
+service: candidate-portal
+app: candidate-portal
 	
 frameworkVersion: ">=2.5.0 <3.0.0"
  
@@ -10,15 +10,19 @@ provider:
   stage: dev
   region: us-east-1
   memorySize: 128
+  endpointType: PRIVATE
   timeout: 30
-  vpc:
-    securityGroupIds:
-      - ${file(./config/${opt:stage, 'dev'}.json):security_group}
-    subnetIds:
-      - ${file(./config/${opt:stage, 'dev'}.json):subnet_private}
-      - ${file(./config/${opt:stage, 'dev'}.json):subnet_public}
   vpcEndpointIds:
-    - ${file(./config/${opt:stage, 'dev'}.json):vpc_endpoint}
+    - ${ssm:/${self:stage}/vpce_endpoint_execute_api~true}
+  resourcePolicy:
+    - Effect: Deny
+      Principal: '*'
+      Action: execute-api:Invoke
+      Resource: "arn:aws:execute-api:${self:provider.region}:${env:ACCOUNT_ID}:*/${self:provider.stage}/*"
+      Condition:
+        StringNotEquals:
+          aws:SourceVpc:
+            - ${ssm:/${self:stage}/vpc_id~true}
   environment:
     CANDIDATE_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     CANDIDATE_EMAIL_TABLE: "candidate-email-${opt:stage, self:provider.stage}"
@@ -30,10 +34,6 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
       Resource: "*"
-      Condition:
-        StringEquals:
-          aws:sourceVpc:
-            - ${file(./config/${opt:stage, 'dev'}.json):vpc_id}
 
 resources:
   Resources:
@@ -64,7 +64,7 @@ functions:
       - http:
           path: candidates/welcome
           method: get
-          
+
   candidateSubmission:
     handler: api/candidate.submit
     memorySize: 128
